@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Groceries</title>
+<style>
+:root{--bg:#fffaf4;--card:#fff;--text:#202124;--muted:#6b7280;--accent:#6c63ff;--green:#59c173;--yellow:#ffd166;--pink:#ff8fab;--blue:#65c7f7;--shadow:0 18px 45px rgba(39,39,59,.10)}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#fffdf8,#f7f7ff);color:var(--text)}
+.app{max-width:760px;margin:0 auto;min-height:100vh;padding:26px 18px 60px}.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}.logo{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#ffd166,#ff8fab,#65c7f7);display:grid;place-items:center;font-size:26px;box-shadow:var(--shadow)}h1{font-size:30px;margin:0}.sub{color:var(--muted);margin:3px 0 0}
+.searchWrap{position:relative}.search{display:flex;align-items:center;background:#fff;border:2px solid #ececf7;border-radius:22px;padding:6px 8px 6px 18px;box-shadow:var(--shadow)}.search input{flex:1;border:0;outline:0;font-size:17px;padding:14px 4px;background:transparent}.search button{border:0;background:linear-gradient(135deg,#6c63ff,#8a7dff);color:white;border-radius:16px;padding:13px 18px;font-weight:700;font-size:15px}.suggestions{position:absolute;z-index:10;top:66px;left:0;right:0;background:white;border-radius:18px;box-shadow:var(--shadow);padding:8px;display:none}.suggestion{padding:12px 14px;border-radius:12px;cursor:pointer}.suggestion:hover{background:#f6f5ff}
+.chips{display:flex;gap:9px;overflow:auto;padding:14px 1px 8px}.chip{white-space:nowrap;border:0;border-radius:999px;padding:9px 13px;font-weight:650;background:white;box-shadow:0 8px 20px rgba(0,0,0,.07)}
+.ai{margin-top:15px;background:linear-gradient(135deg,#f1efff,#fff1f6);border-radius:22px;padding:18px;box-shadow:var(--shadow)}.aiTop{display:flex;justify-content:space-between;align-items:center}.ai h2,.listHeader h2{margin:0;font-size:20px}.ai p{margin:8px 0;color:#555}.ai button{border:0;background:#202124;color:#fff;padding:10px 13px;border-radius:12px;font-weight:700}.aiResults{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.meal{background:rgba(255,255,255,.82);padding:12px;border-radius:15px;font-size:13px;font-weight:700}
+.list{margin-top:24px}.listHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.count{color:var(--muted);font-size:14px}.items{display:grid;gap:11px}.item{display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:12px;background:#fff;border-radius:19px;padding:12px;box-shadow:0 10px 25px rgba(33,33,55,.07);border-left:7px solid var(--accent)}.emoji{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#f7f7fb;font-size:25px}.itemName{font-weight:800}.itemMeta{font-size:13px;color:var(--muted);margin-top:3px}.macroBtn{border:0;border-radius:12px;padding:9px 10px;background:#f0efff;color:#5147d9;font-weight:800}.addRow{display:flex;gap:9px;margin-top:13px}.addRow input{flex:1;border:1px solid #e6e6ef;border-radius:14px;padding:13px;font-size:15px}.addRow button{border:0;border-radius:14px;padding:0 16px;background:#59c173;color:#fff;font-weight:800}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.32);display:none;align-items:end;justify-content:center;padding:18px}.sheet{background:#fff;width:min(720px,100%);border-radius:26px;padding:22px;box-shadow:var(--shadow)}.sheetTop{display:flex;justify-content:space-between;align-items:center}.close{border:0;background:#f1f1f5;border-radius:999px;width:34px;height:34px;font-size:18px}.macros{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.macro{background:#f8f8fc;border-radius:16px;padding:13px;text-align:center}.macro b{display:block;font-size:19px}.macro span{font-size:12px;color:var(--muted)}.note{font-size:12px;color:var(--muted);margin-top:14px}
+@media(max-width:560px){.aiResults{grid-template-columns:1fr}.macros{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand"><div class="logo">🛒</div><div><h1>Smart Groceries</h1><p class="sub">Search smarter. Eat happier.</p></div></div>
+  <div class="searchWrap">
+    <div class="search"><input id="search" placeholder="Search Doritos, fun snacks, low-carb meals…" autocomplete="off"><button onclick="runSearch()">Search</button></div>
+    <div id="suggestions" class="suggestions"></div>
+  </div>
+  <div class="chips"><button class="chip" onclick="quick('Fun snacks')">🎉 Fun snacks</button><button class="chip" onclick="quick('Low-carb meals')">🥗 Low-carb</button><button class="chip" onclick="quick('High-protein snacks')">💪 High protein</button><button class="chip" onclick="quick('School lunch ideas')">🎒 School lunch</button></div>
+  <section class="ai">
+    <div class="aiTop"><div><h2>✨ AI Meal Ideas</h2><p id="aiText">Tell me a goal and I’ll suggest grocery-friendly ideas.</p></div><button onclick="quick('Low-carb meals')">Try AI</button></div>
+    <div id="aiResults" class="aiResults"><div class="meal">🥬 Chicken lettuce wraps</div><div class="meal">🍓 Yogurt berry bowl</div><div class="meal">🥑 Turkey avocado roll-ups</div></div>
+  </section>
+  <section class="list">
+    <div class="listHeader"><h2>🌈 Your Grocery List</h2><div id="count" class="count"></div></div>
+    <div id="items" class="items"></div>
+    <div class="addRow"><input id="newItem" placeholder="Add an item…"><button onclick="addCustom()">+ Add</button></div>
+  </section>
+</div>
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="sheet"><div class="sheetTop"><div><div id="modalEmoji" style="font-size:34px"></div><h2 id="modalName" style="margin:4px 0 0"></h2></div><button class="close" onclick="closeModal()">×</button></div><div id="macros" class="macros"></div><p class="note">Nutrition values are demo estimates per typical serving. A production version can connect to a verified nutrition database for exact product data.</p></div></div>
+<script>
+const foods=[
+{name:'Doritos Nacho Cheese',emoji:'🔺',meta:'Crunchy • cheesy snack',cal:150,protein:2,carbs:18,fat:8,color:'#ff8b61'},
+{name:'Takis Fuego',emoji:'🌶️',meta:'Spicy rolled tortilla chips',cal:140,protein:2,carbs:17,fat:8,color:'#9d7cff'},
+{name:'Oreo Cookies',emoji:'🍪',meta:'Chocolate sandwich cookies',cal:160,protein:1,carbs:25,fat:7,color:'#65c7f7'},
+{name:'Greek Yogurt',emoji:'🥣',meta:'Creamy high-protein snack',cal:100,protein:15,carbs:6,fat:0,color:'#59c173'},
+{name:'Chicken Breast',emoji:'🍗',meta:'Lean protein staple',cal:165,protein:31,carbs:0,fat:4,color:'#ffd166'},
+{name:'Avocado',emoji:'🥑',meta:'Healthy fats • low net carbs',cal:160,protein:2,carbs:9,fat:15,color:'#75c66a'}
+];
+let list=[foods[0],foods[3],foods[4],foods[5]];
+const suggestionPool=['Doritos','Takis','Oreos','Fun snacks','Spicy chips','Low-carb meals','High-protein snacks','Healthy school lunch','Chocolate snacks','Crunchy snacks'];
+function render(){const el=document.getElementById('items');el.innerHTML='';list.forEach((f,i)=>{const row=document.createElement('div');row.className='item';row.style.borderLeftColor=f.color||'#6c63ff';row.innerHTML=`<div class="emoji">${f.emoji||'🛒'}</div><div><div class="itemName">${f.name}</div><div class="itemMeta">${f.meta||'Added to your list'}</div></div><button class="macroBtn" onclick="showMacros(${i})">Macros</button>`;el.appendChild(row)});document.getElementById('count').textContent=list.length+' items'}
+function showMacros(i){const f=list[i];document.getElementById('modalEmoji').textContent=f.emoji||'🛒';document.getElementById('modalName').textContent=f.name;const vals=[['Calories',f.cal??'—'],['Protein',(f.protein??'—')+(f.protein!=null?'g':'')],['Carbs',(f.carbs??'—')+(f.carbs!=null?'g':'')],['Fat',(f.fat??'—')+(f.fat!=null?'g':'')]];document.getElementById('macros').innerHTML=vals.map(v=>`<div class="macro"><b>${v[1]}</b><span>${v[0]}</span></div>`).join('');document.getElementById('modal').style.display='flex'}
+function closeModal(){document.getElementById('modal').style.display='none'}
+function addCustom(){const inp=document.getElementById('newItem');if(!inp.value.trim())return;list.push({name:inp.value.trim(),emoji:'🛍️',meta:'Custom grocery item',color:'#ff8fab'});inp.value='';render()}
+const s=document.getElementById('search'),box=document.getElementById('suggestions');s.addEventListener('input',()=>{const q=s.value.toLowerCase();if(!q){box.style.display='none';return}const matches=suggestionPool.filter(x=>x.toLowerCase().includes(q)).slice(0,6);box.innerHTML=matches.map(x=>`<div class="suggestion" onclick="quick('${x.replace(/'/g,"\\'")}')">🔎 ${x}</div>`).join('');box.style.display=matches.length?'block':'none'});
+function quick(q){s.value=q;box.style.display='none';runSearch()}
+function runSearch(){const q=s.value.trim().toLowerCase();if(!q)return;if(q.includes('low-carb')||q.includes('low carb')){document.getElementById('aiText').textContent='Low-carb picks focused on protein, vegetables, and filling fats.';document.getElementById('aiResults').innerHTML='<div class="meal">🥬 Chicken lettuce wraps</div><div class="meal">🥑 Turkey avocado bowls</div><div class="meal">🥦 Salmon + roasted broccoli</div>';return}if(q.includes('high-protein')||q.includes('high protein')){document.getElementById('aiText').textContent='Protein-packed ideas that are easy to add to your grocery list.';document.getElementById('aiResults').innerHTML='<div class="meal">🥣 Greek yogurt + berries</div><div class="meal">🥚 Eggs + cottage cheese</div><div class="meal">🍗 Chicken snack box</div>';return}const f=foods.find(x=>x.name.toLowerCase().includes(q)||q.includes(x.name.split(' ')[0].toLowerCase()));if(f&&!list.some(x=>x.name===f.name)){list.unshift(f);render();document.getElementById('aiText').textContent=`Found ${f.name} and added it to your grocery list.`}else if(f){document.getElementById('aiText').textContent=`${f.name} is already on your grocery list.`}else{document.getElementById('aiText').textContent=`Smart search idea: “${s.value.trim()}”. In the full AI version, this would search a much larger food catalog and generate matching suggestions.`}}
+render();
+</script>
+</body>
+</html>
