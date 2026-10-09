@@ -1,0 +1,11 @@
+{
+  "name": "smartshop-api",
+  "version": "0.1.0",
+  "description": "Dependency-free API for the Smart Groceries food catalog and grocery list",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "license": "GPL-3.0-or-later"
+}
